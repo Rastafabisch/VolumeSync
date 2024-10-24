@@ -24,6 +24,8 @@
 	<string>1</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>${MACOSX_DEPLOYMENT_TARGET}</string>
+	<key>NSAppleEventsUsageDescription</key>
+	<string>This app requires access to accessibility features to control the volume in Music.app.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2011 __MyCompanyName__. All rights reserved.</string>
 	<key>NSMainNibFile</key>
