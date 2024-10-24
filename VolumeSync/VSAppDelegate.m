@@ -7,7 +7,7 @@
 //
 
 #import "VSAppDelegate.h"
-#import "iTunes.h"
+#import "Music.h"
 
 #include <AudioToolbox/AudioServices.h>
 #include <CoreAudio/CoreAudio.h>
@@ -16,7 +16,7 @@
 @interface VSAppDelegate ()<NSMenuDelegate>
 
 @property (nonatomic, assign) float lastVolumeSet;
-@property (nonatomic, retain) iTunesApplication* iTunes;
+@property (nonatomic, retain) MusicApplication* Music;
 @property (nonatomic, assign) AudioDeviceID outputDevice;
 @property (nonatomic, retain) NSStatusItem* statusItem;
 
@@ -25,7 +25,7 @@
 
 @implementation VSAppDelegate
 
-@synthesize lastVolumeSet, iTunes, outputDevice, statusItem;
+@synthesize lastVolumeSet, Music, outputDevice, statusItem;
 
 - (id) init
 {
@@ -38,17 +38,17 @@
 
 - (void) dealloc
 {
-  self.iTunes = nil;
+    self.Music = nil;
   self.statusItem = nil;
   [super dealloc];
 }
 
-- (void) setITunesVolume:(Float32)volume
+- (void) setMusicVolume:(Float32)volume
 {
-  if ([self.iTunes isRunning])
+  if ([self.Music isRunning])
   {
-    int iTunesVolume = volume*100;
-    [iTunes setSoundVolume:iTunesVolume];
+    int MusicVolume = volume*100;
+    [Music setSoundVolume:MusicVolume];
   }
 }
 
@@ -106,7 +106,7 @@
   if (volume != self.lastVolumeSet)
   {
     self.lastVolumeSet = volume;
-    [self setITunesVolume:volume];
+    [self setMusicVolume:volume];
   }
   
   return noErr;
@@ -159,21 +159,22 @@ static OSStatus rawOnVolumeChange(AudioDeviceID device, UInt32 inChannel, Boolea
 - (void) setupStatusIcon
 {
   self.statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
-  self.statusItem.image = [NSImage imageNamed:@"65-note.png"];
-  self.statusItem.alternateImage = [NSImage imageNamed:@"65-note-inv.png"];
+  self.statusItem.button.image = [NSImage imageNamed:@"65-note.png"];
+    [self.statusItem.button.image setTemplate:YES];
+  self.statusItem.button.alternateImage = [NSImage imageNamed:@"65-note-inv.png"];
   NSMenuItem* quitItem = [[[NSMenuItem alloc] initWithTitle:@"Quit VolumeSync" action:@selector(onQuitPushed) keyEquivalent:@""] autorelease];
   NSMenu* menu = [[[NSMenu alloc] initWithTitle:@"statusBarMenuTitle"] autorelease];
   menu.delegate = self;
   [menu addItem:quitItem];
   [self.statusItem setMenu:menu];
-  [self.statusItem setHighlightMode:YES];
+    [self.statusItem.button highlight:YES];
 }
 
 - (void) applicationDidFinishLaunching:(NSNotification*)aNotification
 {
   [self setupStatusIcon];
   
-  self.iTunes = [SBApplication applicationWithBundleIdentifier:@"com.apple.iTunes"];
+  self.Music = [SBApplication applicationWithBundleIdentifier:@"com.apple.Music"];
   
   if ([self openDefaultOutputDevice])
   {
